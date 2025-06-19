@@ -1,0 +1,21 @@
+# Conclusiones
+
+Hallazgos 
+
+1. El sitio Demoblaze utiliza alertas del navegador (`window.alert`) para confirmar la adición de productos al carrito, lo cual puede ser un punto de fricción en la automatización si no se maneja correctamente.
+
+2. La arquitectura de la aplicación permite que los elementos interactivos sean accesibles fácilmente mediante `cy.contains()` y `cy.get()`, lo cual facilita la escritura de pruebas estables.
+
+3. El botón “Place Order” solo se habilita tras agregar productos y navegar correctamente al carrito, lo cual fue validado exitosamente.
+
+4. El formulario de compra no tiene validaciones front-end estrictas (por ejemplo, se puede ingresar cualquier texto como número de tarjeta). Esto puede representar una vulnerabilidad desde el punto de vista de UX y seguridad.
+
+5. La confirmación final de compra se maneja con una alerta tipo SweetAlert, lo cual mejora la usabilidad pero requiere validaciones específicas en los tests.
+
+Conclusiones	
+
+1. Cypress demostró ser una herramienta efectiva y fluida para pruebas end-to-end, permitiendo una interacción natural con la aplicación y validaciones detalladas.
+
+2. La estructura modular del test (uso de funciones auxiliares y `beforeEach`) permitió un código limpio, reutilizable y fácil de mantener.
+
+3. La prueba implementada valida el flujo más crítico del negocio: agregar productos y completar la compra, lo que asegura un alto valor funcional del test.
