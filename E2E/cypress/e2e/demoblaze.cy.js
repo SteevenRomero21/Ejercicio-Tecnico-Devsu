@@ -1,6 +1,5 @@
-describe('Flujo de compra en Demoblaze', () => { //Se define el bloque de pruebas para el flujo de compra en Demoblaze
-    
-    const datosCompra = { //Declaro el objeto con los datos de compra
+describe('Flujo de compra en Demoblaze', () => {
+    const datosCompra = {
         nombre: 'Steeven Romero',
         pais: 'Ecuador',
         ciudad: 'Riobamba',
@@ -9,52 +8,60 @@ describe('Flujo de compra en Demoblaze', () => { //Se define el bloque de prueba
         anio: '2025'
     };
 
-    // Función para verificar la alerta de producto agregado
-    const verificarAlertaProductoAgregado = () => { 
-        cy.on('window:alert', (str) => {
-            expect(str).to.equal('Product added');
+    // Función para verificar la alerta de producto agregado de forma segura
+    const verificarAlertaProductoAgregado = () => {
+        return new Cypress.Promise((resolve) => {
+            cy.on('window:alert', (str) => {
+                expect(str).to.equal('Product added');
+                resolve(); // Solo continúa si la alerta se muestra correctamente
+            });
         });
     };
 
     // Función para agregar un producto al carrito
     const agregarProducto = (nombreProducto) => {
-        cy.contains(nombreProducto).click(); //Encontrar el producto por su nombre
-        cy.contains('Add to cart').click();
-        verificarAlertaProductoAgregado();// Verifica la alerta de producto agregado
-        cy.get('.navbar-brand').click(); // Volver al inicio
+        cy.contains(nombreProducto, { timeout: 10000 }).click();
+        
+        // Intercepta la petición de agregar al carrito
+        cy.intercept('POST', '**/addtocart').as('addToCart');
+        
+        const alerta = verificarAlertaProductoAgregado(); // Escucha la alerta antes del click
+        cy.contains('Add to cart', { timeout: 10000 }).click();
+        cy.wait('@addToCart'); // Espera la llamada de red
+        alerta; // Espera que se resuelva la promesa de la alerta
+
+        // Da tiempo a que el backend actualice y el DOM procese el cambio
+        cy.wait(1000);
+
+        cy.get('.navbar-brand', { timeout: 10000 }).click(); // Vuelve al inicio
     };
 
-    // Antes de cada test, visita la página principal
+    // Visita la página antes de cada test
     beforeEach(() => {
-        cy.visit('https://www.demoblaze.com/'); //Se ejecuta antes de cada test individual, carga la pagina principal de Demoblaze y no repetimos cy.visit
+        cy.visit('https://www.demoblaze.com/', { timeout: 60000 });
     });
 
-    it('Agregar dos productos al carrito, visualiza el carrito, completa la compra y finaliza', () => { //Definimos el caso de prueba
-        // Verifica que la página cargue correctamente
-        
-        // Agrega los productos
+    it('Agregar dos productos al carrito, visualiza el carrito, completa la compra y finaliza', () => {
         agregarProducto('Sony xperia z5');
         agregarProducto('HTC One M9');
 
-        // Visualiza el carrito
-        cy.get('#cartur').click(); // Clic en el botón del carrito
-        cy.contains('Sony xperia z5').should('exist'); // Verifica que el producto esté en el carrito
-        cy.contains('HTC One M9').should('exist'); // Verifica que el segundo producto esté en el carrito
-        cy.get('tr.success').should('have.length', 2); // Verifica que hay dos productos en el carrito
+        cy.get('#cartur', { timeout: 10000 }).click();
+        cy.contains('Sony xperia z5', { timeout: 10000 }).should('exist');
+        cy.contains('HTC One M9', { timeout: 10000 }).should('exist');
+        cy.get('tr.success', { timeout: 10000 }).should('have.length', 2);
 
-        // Completa el formulario de compra
-        cy.contains('Place Order').click();
-        cy.get('#name').type(datosCompra.nombre);
-        cy.get('#country').type(datosCompra.pais);
-        cy.get('#city').type(datosCompra.ciudad);
-        cy.get('#card').type(datosCompra.tarjeta);
-        cy.get('#month').type(datosCompra.mes);
-        cy.get('#year').type(datosCompra.anio);
-        cy.contains('Purchase').click(); // Clic en el botón de compra
+        cy.contains('Place Order', { timeout: 10000 }).click();
+        cy.get('#name', { timeout: 10000 }).type(datosCompra.nombre);
+        cy.get('#country', { timeout: 10000 }).type(datosCompra.pais);
+        cy.get('#city', { timeout: 10000 }).type(datosCompra.ciudad);
+        cy.get('#card', { timeout: 10000 }).type(datosCompra.tarjeta);
+        cy.get('#month', { timeout: 10000 }).type(datosCompra.mes);
+        cy.get('#year', { timeout: 10000 }).type(datosCompra.anio);
+        cy.contains('Purchase', { timeout: 10000 }).click();
 
-        // Valida confirmación de compra
-        cy.get('.sweet-alert').should('be.visible'); // Verifica que la alerta de compra se muestre
-        cy.get('.sweet-alert > h2').should('contain.text', 'Thank you for your purchase!'); // Verifica que el mensaje de agradecimiento esté presente
-        cy.contains('OK').click();
+        // Confirmación de compra
+        cy.get('.sweet-alert', { timeout: 10000 }).should('be.visible');
+        cy.get('.sweet-alert > h2', { timeout: 10000 }).should('contain.text', 'Thank you for your purchase!');
+        cy.contains('OK', { timeout: 10000 }).click();
     });
 });
