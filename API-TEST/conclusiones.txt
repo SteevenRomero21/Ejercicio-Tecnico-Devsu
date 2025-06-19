@@ -1,0 +1,50 @@
+# Conclusiones
+
+#Hallazgos técnicos 
+
+1. La API siempre devuelve código HTTP 200, incluso cuando ocurre un error
+   - Esto puede dificultar el uso de herramientas de monitoreo o pruebas que dependen del código de estado HTTP para identificar fallos.
+   - Se recomienda devolver códigos 4xx (como 400 o 401) cuando ocurre un error lógico como "usuario ya existente" o "contraseña incorrecta".
+
+2. El endpoint de login devuelve el token como texto plano
+   - En lugar de una estructura JSON, la respuesta es un string como: `"Auth_token: <valor>"`.
+   - Esto puede dificultar el consumo de esta API desde sistemas automatizados o clientes front-end que esperan objetos JSON.
+   - Se recomienda estandarizar la respuesta para que tenga el formato:
+     ```json
+     { "Auth_token": "abc123..." }
+     ```
+
+3. Falta de validaciones en el backend
+   - No se encontró una validación clara de la longitud mínima/máxima de la contraseña o del nombre de usuario.
+   - Fue posible registrar usuarios con nombres aleatorios o incluso contraseñas muy débiles.
+   - Esto representa un riesgo de seguridad y falta de control de calidad en la API.
+
+4. La API permite múltiples registros con usernames iguales si se cambian milisegundos (ej. `steeven_test_12345`, `steeven_test_12346`)
+   - Aunque esto es técnicamente esperado, no hay una validación sobre patrones de usernames duplicados o intencionales, lo cual podría usarse para abusos de nombres en ambientes reales.
+
+5. Rendimiento aceptable pero no óptimo
+   - En general, las respuestas estuvieron dentro del rango de 300ms a 1200ms.
+   - Para endpoints como login y registro, un tiempo ideal estaría por debajo de 500ms, especialmente bajo alta carga.
+
+6. No hay verificación de campos faltantes o vacíos
+   - Se pueden enviar requests con `username` o `password` vacíos sin que la API devuelva errores específicos.
+   - Esto es crítico desde una perspectiva de QA y seguridad.
+
+
+#Conclusiones
+
+1. Cypress permite automatizar pruebas de APIs de manera rápida, legible y con gran soporte para validaciones de respuesta HTTP, contenido y rendimiento.
+
+2. La API de Demoblaze, aunque responde siempre con status 200, devuelve errores lógicos a través de mensajes como `errorMessage`, lo cual fue manejado adecuadamente con condicionales y `failOnStatusCode: false`.
+
+3. Se implementó una estrategia con `before()` para registrar el usuario una sola vez y reducir redundancia, mejorando la eficiencia del test suite.
+
+4. Usar un `username` dinámico con `Date.now()` asegura independencia entre ejecuciones y evita errores por usuarios duplicados.
+
+5. Se implementaron validaciones de tiempo de respuesta (`response.duration`) para demostrar atención a la performance del backend, añadiendo un valor adicional a las pruebas automatizadas.
+
+6. Se cubrieron casos positivos y negativos, permitiendo evaluar tanto la funcionalidad esperada como el manejo de errores.
+
+Esta prueba demuestra un enfoque profesional en QA Automation, con énfasis en cobertura funcional, manejo de errores, reutilización de código y verificación de rendimiento.
+
+**Recomendación general**: aunque la API cumple su función básica, se beneficiarían de una mejora en estandarización de respuestas, validación de entradas y uso de códigos HTTP adecuados para errores.
