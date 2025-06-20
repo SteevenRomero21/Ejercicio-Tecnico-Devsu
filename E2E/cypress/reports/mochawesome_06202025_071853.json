@@ -1,0 +1,106 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-06-20T12:18:38.504Z",
+    "end": "2025-06-20T12:18:53.439Z",
+    "duration": 14935,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "80d1767b-eb4a-48fe-9b3f-5f5606e59a7a",
+      "title": "",
+      "fullFile": "cypress\\e2e\\demoblaze.cy.js",
+      "file": "cypress\\e2e\\demoblaze.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "ed541984-a94f-42bc-b288-30ab358605ca",
+          "title": "Flujo de compra en Demoblaze",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Agregar dos productos al carrito, visualiza el carrito, completa la compra y finaliza",
+              "fullTitle": "Flujo de compra en Demoblaze Agregar dos productos al carrito, visualiza el carrito, completa la compra y finaliza",
+              "timedOut": null,
+              "duration": 11983,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "agregarProducto('Sony xperia z5');\nagregarProducto('HTC One M9');\ncy.get('#cartur', {\n  timeout: 10000\n}).click();\ncy.contains('Sony xperia z5', {\n  timeout: 10000\n}).should('exist');\ncy.contains('HTC One M9', {\n  timeout: 10000\n}).should('exist');\ncy.get('tr.success', {\n  timeout: 10000\n}).should('have.length', 2);\ncy.contains('Place Order', {\n  timeout: 10000\n}).click();\ncy.get('#name', {\n  timeout: 10000\n}).type(datosCompra.nombre);\ncy.get('#country', {\n  timeout: 10000\n}).type(datosCompra.pais);\ncy.get('#city', {\n  timeout: 10000\n}).type(datosCompra.ciudad);\ncy.get('#card', {\n  timeout: 10000\n}).type(datosCompra.tarjeta);\ncy.get('#month', {\n  timeout: 10000\n}).type(datosCompra.mes);\ncy.get('#year', {\n  timeout: 10000\n}).type(datosCompra.anio);\ncy.contains('Purchase', {\n  timeout: 10000\n}).click();\n// Confirmación de compra\ncy.get('.sweet-alert', {\n  timeout: 10000\n}).should('be.visible');\ncy.get('.sweet-alert > h2', {\n  timeout: 10000\n}).should('contain.text', 'Thank you for your purchase!');\ncy.contains('OK', {\n  timeout: 10000\n}).click();",
+              "err": {},
+              "uuid": "28b6ad42-4736-43a4-bfdb-daf3d4a846c4",
+              "parentUUID": "ed541984-a94f-42bc-b288-30ab358605ca",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "28b6ad42-4736-43a4-bfdb-daf3d4a846c4"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 11983,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true,
+        "timestamp": "mmddyyyy_HHMMss"
+      },
+      "version": "6.2.0"
+    }
+  }
+}
